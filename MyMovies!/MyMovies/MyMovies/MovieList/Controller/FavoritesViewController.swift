@@ -6,21 +6,27 @@
 //
 
 import UIKit
+import Kingfisher
 
-class FavoritesViewController: UIViewController, UITableViewDataSource {
+class FavoritesViewController: UIViewController {
+    // MARK: - atributes
     
     var myMovies: [Movie] = []
     
-    var teste = ["1","1","1","1","1"]
-    
     let myTableView = UITableView()
+    
+    let movielist = MovieListViewController()
+    
+    // MARK: - LifeCycle
     
     override func loadView() {
         super.loadView()
-        // Do any additional setup after loading the view.
         title = "My Movies"
         setupTableView()
+        movielist.favoritesDelegate = self
     }
+    
+    // MARK: - Methods
     
     func setupTableView(){
         let screenSize: CGRect = UIScreen.main.bounds
@@ -28,36 +34,45 @@ class FavoritesViewController: UIViewController, UITableViewDataSource {
         let screenHeight = screenSize.height
         myTableView.frame = CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight);
         myTableView.dataSource = self
-//        myTableView.translatesAutoresizingMaskIntoConstraints = false
-//        myTableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-//        myTableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-//        myTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-//        myTableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        myTableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        myTableView.delegate = self
+        myTableView.register(TableViewCell.self, forCellReuseIdentifier: "Cell")
         myTableView.backgroundColor = .white
+        myTableView.rowHeight = 131
         view.addSubview(myTableView)
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        teste.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        
-        //cell.textLabel?.text = myMovies[indexPath.row].title
-        cell.textLabel?.text = teste[indexPath.row]
-        
-        return cell
     }
     
 }
 
+// MARK: - UITableViewDataSource
+
+extension FavoritesViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        myMovies.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell: TableViewCell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? TableViewCell else { return UITableViewCell() }
+        let genreList = Genre_list(genre_ids: myMovies[indexPath.row].genre_ids).printGenres()
+        cell.setupCell(posterUrl: self.myMovies[indexPath.row].poster_path ,title: self.myMovies[indexPath.row].title, genres: genreList)
+        return cell
+    }
+}
+
+// MARK: - UITableViewDelegate
+
+extension FavoritesViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let movie = myMovies[indexPath.row]
+        navigationController?.pushViewController(SelectedMovieViewController(movie: movie, hideFavButton: true), animated: false)
+    }
+}
+
+// MARK: - FavoritesDelegate
+
 extension FavoritesViewController: FavoritesDelegate {
     func addFavorite(movie: Movie){
         DispatchQueue.main.async {
-            self.teste.append(movie.title)
+            self.myMovies.append(movie)
             self.myTableView.reloadData()
             print("item \(movie.title) favorited")
         }

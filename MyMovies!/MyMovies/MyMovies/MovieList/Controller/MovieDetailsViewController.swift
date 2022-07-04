@@ -15,13 +15,16 @@ class MovieDetailsViewController {
     }
     
     func showDetails(_ movie: Movie, handler: @escaping (UIAlertAction) -> Void){
-        let title = movie.title+" "+movie.description
+        let title = movie.title
         let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = NSTextAlignment.left
         
+        let genre_list = Genre_list(genre_ids: movie.genre_ids)
+        let details = movie.details()+genre_list.printGenres()
+        
         let attributedMessageText = NSMutableAttributedString(
-            string: movie.details(),
+            string: details,
             attributes: [
                 NSAttributedString.Key.paragraphStyle: paragraphStyle,
                 NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15.0)

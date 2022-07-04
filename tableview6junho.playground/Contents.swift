@@ -57,7 +57,7 @@ extension MyViewController: UITableViewDataSource {
 
 extension MyViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
+        return 30
     }
 }
 
@@ -98,7 +98,7 @@ class CustomTableViewCell: UITableViewCell {
         let constraints = [
             imgUser.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             imgUser.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            imgUser.heightAnchor.constraint(equalToConstant: 10),
+            imgUser.heightAnchor.constraint(equalToConstant: 20),
             imgUser.trailingAnchor.constraint(equalTo: usernameLabel.leadingAnchor, constant: -10),
             imgUser.widthAnchor.constraint(equalToConstant: 10),
             usernameLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)

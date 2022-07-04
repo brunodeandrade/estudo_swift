@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Kingfisher
 
 protocol FavoritesDelegate: AnyObject{
     func addFavorite(movie: Movie)
@@ -18,13 +17,13 @@ class MovieListViewController: UIViewController {
 
     var myCollectionView:MovieCollectionView?
     
-    var favoritesDelegate: FavoritesDelegate?
+    weak var favoritesDelegate: FavoritesDelegate?
     
     var movies: [Movie] = []
     
     let movieManager = MovieManager()
     
-    var pagination = 1
+    var page = 1
     
     var isLoading = false
     
@@ -34,7 +33,7 @@ class MovieListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Popular Movies"
+        title = "Trending Movies"
         view.backgroundColor = .white
         movieManager.delegate = self
         movieManager.fetchMovie()
@@ -92,7 +91,7 @@ extension MovieListViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         
-        myCell.setupCell(posterUrl: movies[indexPath.item].image)
+        myCell.setupCell(posterUrl: movies[indexPath.item].poster_path)
         
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(showDetails(_:)))
         myCell.addGestureRecognizer(longPress)
@@ -105,7 +104,10 @@ extension MovieListViewController: UICollectionViewDataSource {
 extension MovieListViewController: UICollectionViewDelegate {
  
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       print("User tapped on item \(indexPath.row)")
+        let movie = movies[indexPath.item]
+        let selectedMovieViewController = SelectedMovieViewController(movie: movie, hideFavButton: false)
+        selectedMovieViewController.favoritesDelegate = self.favoritesDelegate
+        navigationController?.pushViewController(selectedMovieViewController, animated: false)
     }
     
 //    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -117,8 +119,8 @@ extension MovieListViewController: UICollectionViewDelegate {
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if(scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)){
-            pagination+=15
-            movieManager.fetchMovie(String(pagination))
+            page+=1
+            movieManager.fetchMovie(String(page))
         }
     }
 }
@@ -140,6 +142,7 @@ extension MovieListViewController: MovieManagerDelegate {
         print(error)
     }
 }
+
 
 // MARK: - UICollectionViewDelegateFlowLayout
 
