@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MovieDetailsViewController {
+class MovieAlert {
     let controller: UIViewController
     
     init(controller: UIViewController){
@@ -20,7 +20,7 @@ class MovieDetailsViewController {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = NSTextAlignment.left
         
-        let genre_list = Genre_list(genre_ids: movie.genre_ids)
+        let genre_list = Genre_list(genre_ids: movie.genreIds)
         let details = movie.details()+genre_list.printGenres()
         
         let attributedMessageText = NSMutableAttributedString(
